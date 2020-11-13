@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@700&display=swap');
+
+        html,
+        body {
+            height: 99%;
+        }
+
+        .chat-system {
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 0fr 1fr 0fr;
+            gap: 0px 0px;
+            grid-template-areas:
+                "."
+                "."
+                ".";
+        }
+
+        .chat-messges {
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+        }
+
+        .input-message {
+            color: rgb(255, 255, 216);
+            font-family: 'Titillium Web', sans-serif;
+            letter-spacing: 0.1ch;
+            padding: 8px 24px;
+            border-radius: 4px;
+            margin: 8px;
+        }
+
+        .chat-messges .new-user-connected {
+            background-color: #4158D0;
+            background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            text-align: center;
+        }
+
+        .chat-messges .other {
+            background-color: #08AEEA;
+            justify-self: flex-start;
+            align-self: flex-start;
+        }
+
+        .chat-messges .me {
+            justify-self: right;
+            align-self: flex-end;
+            background-color: #74EBD5;
+
+        }
+
+        .chat-box {
+            display: grid;
+            grid-template-columns: 1fr 0fr;
+            grid-template-rows: 1fr;
+            gap: 0px 0px;
+            grid-template-areas:
+                ". .";
+        }
+
+        .chat-box input {
+            padding: 8px;
+        }
+
+        .chat-box input:focus {
+            border: 1px solid #7563dd;
+        }
+
+        .add-username-box {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 100;
+            background-color: #fafafa;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 0fr 1fr;
+            gap: 0px 0px;
+            grid-template-areas:
+                "."
+                ".";
+        }
+
+        .add-username-box form {
+            display: flex;
+        }
+
+        .add-username-box input {
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        .username-form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .add-username-box button {
+            background: rgba(17, 130, 193, 1);
+            border: none;
+            padding: 0 16px;
+            color: #fafafa;
+            border-radius: 3px;
+            margin-left: 8px;
+            background-image: radial-gradient(circle 465px at -15.1% -25%, rgba(17, 130, 193, 1) 0%, rgba(67, 166, 238, 1) 49%, rgba(126, 203, 244, 1) 90.2%);
+        }
+
+        #close-btn {
+            float: right;
+            padding: 8px 16px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .username-form-container input.error {
+            border: 1px solid red;
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        #user-is-typing {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #currentUsername {
+            font-size: 2.5em;
+            padding: 8px 16px;
+            text-align: center;
+            font-family: 'Titillium Web', sans-serif;
+            background: -webkit-linear-gradient( 111.6deg,  rgba(174,68,223,1) 27.3%, rgba(246,135,135,1) 112.7% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="add-username-box">
+        <div class="close-btn-container">
+            <span id="close-btn">❌</span>
+        </div>
+        <div class="username-form-container">
+            <form>
+                <input type="text" name="username" id="username" placeholder="username">
+                <button id="submit-username">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="chat-system">
+        <div id="currentUsername"></div>
+        <div class="chat-messges" id="chat-messges"></div>
+        <div>
+            <p id="user-is-typing"></p>
+            <form class="chat-box">
+                <input type="text" onfocus="userIsTyping()" onfocusout="userTypingOver()" aria-label="chatbox"
+                    name="message" id="message" placeholder="your message..." />
+                <button id="send">Send</button>
+            </form>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        let curUsername;
+        document.getElementById("send").addEventListener("click", (e) => {
+            e.preventDefault();
+            const messageBox = document.getElementById("message");
+            socket.emit('chat-message', { msg: messageBox.value, user: curUsername });
+            addMessage({ msg: messageBox.value });
+            messageBox.value = "";
+            return false;
+        });
+
+
+        document.getElementById("submit-username").addEventListener("click", (e) => {
+            e.preventDefault();
+            const usernameBox = document.getElementById("username");
+            socket.emit('check-username', usernameBox.value);
+            return false;
+        });
+
+        document.getElementById("close-btn").addEventListener("click", (e) => {
+            e.preventDefault();
+            // generate random username
+            const username = makeid(7);
+            socket.emit('check-username', username);
+            return false;
+        });
+
+        function makeid(length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        socket.on("invalid-username", (a) => {
+            // set error
+            const usernameBox = document.getElementById("username");
+            usernameBox.classList.add("error")
+        });
+
+        socket.on('valid-username', (username) => {
+            curUsername = username;
+            document.getElementById("currentUsername").innerText = username;
+            const addUsernameBox = document.getElementsByClassName("add-username-box");
+            addUsernameBox[0].remove();
+        })
+
+        socket.on("user-connected", (username) => {
+            const addUsernameBox = document.getElementsByClassName("add-username-box");
+            if (addUsernameBox.length === 0) {
+                userStatusChanged(username + " added to the channel");
+            }
+        });
+        socket.on("chat-message", (obj) => {
+            const addUsernameBox = document.getElementsByClassName("add-username-box");
+            if (addUsernameBox.length === 0) {
+                addMessage(obj);
+            }
+        });
+
+        socket.on("user-disconnected", (username) => {
+            const addUsernameBox = document.getElementsByClassName("add-username-box");
+            if (addUsernameBox.length === 0) {
+                userStatusChanged(username + " have left the channel");
+            }
+            document.getElementById(username).remove();
+        });
+
+        socket.on("user-is-typing", (username) => {
+            if (username != curUsername) {
+                let user = document.createElement("span");
+                user.id = username;
+                user.innerText = username + " is typing...";
+                document.getElementById("user-is-typing").appendChild(user);
+            }
+
+        });
+
+        socket.on("typing-over", (username) => {
+            document.getElementById(username).remove();
+        })
+
+        function userStatusChanged(msg) {
+            const msgContainer = document.createElement("p");
+            msgContainer.innerText = msg;
+            msgContainer.className = "input-message new-user-connected";
+            document.getElementById("chat-messges").appendChild(msgContainer);
+        }
+
+        function userIsTyping() {
+            socket.emit("user-is-typing", curUsername);
+        }
+
+        function userTypingOver() {
+            socket.emit("typing-over", curUsername);
+        }
+
+        function addMessage(obj) {
+            const msgContainer = createMessageContainer(obj)
+            let msgContainerClass = "input-message";
+            if (obj.user) {
+                msgContainerClass += " me";
+            } else {
+                msgContainerClass += " other";
+            }
+            msgContainer.className = msgContainerClass;
+            document.getElementById("chat-messges").appendChild(msgContainer);
+        }
+
+        function createMessageContainer(obj) {
+            const msgContainer = document.createElement("p");
+            const userData = document.createElement("span");
+            userData.innerText = obj.user ? obj.user + ": " : "ME: ";
+            const msgData = document.createElement("span");
+            msgData.innerText = obj.msg;
+            msgContainer.appendChild(userData);
+            msgContainer.appendChild(msgData);
+            return msgContainer;
+        }
+    </script>
+</body>
+
+</html>
